@@ -1,0 +1,130 @@
+parameters:
+  agti.rdstation.endpoint: 'https://api.rd.services/'
+
+services:
+  _defaults:
+    public: true
+
+
+# api
+  agti.rdstation.infrastructure.api.oauth:
+    class: AGTI\RdStation\Infrastructure\Service\API\Oauth
+    arguments:
+      - '@doctrine.orm.entity_manager'
+
+  agti.rdstation.infrastructure.api.event_batch:
+    class: 'AGTI\RdStation\Infrastructure\Service\API\EventBatch'
+    arguments:
+          - '@doctrine.orm.entity_manager'
+
+  agti.rdstation.infrastructure.api.reauth_token:
+    class: 'AGTI\RdStation\Infrastructure\Service\API\ReauthToken'
+    arguments:
+          - '@doctrine.orm.entity_manager'
+
+  agti.rdstation.infrastructure.api.add_contact:
+    class: 'AGTI\RdStation\Infrastructure\Service\API\AddContact'
+    arguments:
+      - '@doctrine.orm.entity_manager'
+
+  agti.rdstation.infrastructure.api.get_contact:
+    class: 'AGTI\RdStation\Infrastructure\Service\API\GetContact'
+    arguments:
+      - '@doctrine.orm.entity_manager'
+
+  agti.rdstation.infrastructure.api.update_contact:
+    class: 'AGTI\RdStation\Infrastructure\Service\API\UpdateContact'
+    arguments:
+      - '@doctrine.orm.entity_manager'
+
+  agti.rdstation.infrastructure.api.event:
+    class: 'AGTI\RdStation\Infrastructure\Service\API\Event'
+    arguments:
+      - '@doctrine.orm.entity_manager'
+
+  agti.rdstation.infrastructure.api.base_service:
+    class: 'AGTI\RdStation\Infrastructure\Service\API\BaseService'
+    arguments:
+      - '@doctrine.orm.entity_manager'
+
+  #utils 
+  agti.rdstation.infrastructure.utils.auth_dialog:
+    class: 'AGTI\RdStation\Infrastructure\Service\Utils\AuthDialog'
+    arguments:
+      - '%agti.rdstation.endpoint%'
+
+  agti.rdstation.infrastructure.utils.get_valid_token:
+    class: 'AGTI\RdStation\Infrastructure\Service\Utils\GetValidToken'
+    arguments:
+      - '@doctrine.orm.entity_manager'
+      - '@agti.rdstation.entity.agrdstation_token'
+      - '@agti.rdstation.infrastructure.api.reauth_token'
+
+# entity
+
+  agti.rdstation.entity.agrdstation_token:
+    class: 'AGTI\RdStation\Entity\AgrdstationToken'
+
+  agti.rdstation.entity.agrdstation_contacts:
+    class: 'AGTI\RdStation\Entity\AgrdstationContacts'
+
+# app
+
+  agti.rdstation.application.create_contact:
+    class: 'AGTI\RdStation\Application\Service\CreateContact'
+    arguments:
+      - '@agti.rdstation.infrastructure.utils.get_valid_token'
+      - '@agti.rdstation.infrastructure.api.add_contact'
+      - '@agti.rdstation.entity.agrdstation_contacts'
+      - '@doctrine.orm.entity_manager'
+      - '@agti.rdstation.infrastructure.api.get_contact'
+
+  agti.rdstation.application.update_contact:
+    class: 'AGTI\RdStation\Application\Service\UpdateContact'
+    arguments:
+      - '@agti.rdstation.infrastructure.utils.get_valid_token'
+      - '@agti.rdstation.infrastructure.api.update_contact'
+      - '@doctrine.orm.entity_manager'
+
+  agti.rdstation.application.update_tags:
+    class: 'AGTI\RdStation\Application\Service\UpdateTags'
+    arguments:
+      - '@agti.rdstation.infrastructure.utils.get_valid_token'
+      - '@doctrine.orm.entity_manager'
+      - '@agti.rdstation.infrastructure.api.update_contact'
+      - '@agti.rdstation.infrastructure.api.get_contact'
+      - '@agti.rdstation.application.create_contact'
+
+  agti.rdstation.application.event_close_order:
+    class: 'AGTI\RdStation\Application\Service\EventCloseOrder'
+    arguments:
+      - '@agti.rdstation.infrastructure.utils.get_valid_token'
+      - '@doctrine.orm.entity_manager'
+      - '@agti.rdstation.infrastructure.api.event'
+
+  agti.rdstation.application.event_opportunity_win:
+    class: 'AGTI\RdStation\Application\Service\EventOpportunityWin'
+    arguments:
+      - '@agti.rdstation.infrastructure.utils.get_valid_token'
+      - '@doctrine.orm.entity_manager'
+      - '@agti.rdstation.infrastructure.api.event'
+      - '@agti.rdstation.application.create_contact'
+
+
+  agti.rdstation.application.event_tag_opportunity:
+    class: 'AGTI\RdStation\Application\Service\EventTagOpportunity'
+    arguments:
+      - '@agti.rdstation.infrastructure.utils.get_valid_token'
+      - '@doctrine.orm.entity_manager'
+      - '@agti.rdstation.infrastructure.api.event'
+      - '@agti.rdstation.application.create_contact'
+
+  agti.rdstation.application.event_cart_add_itens:
+    class: 'AGTI\RdStation\Application\Service\EventCartAddItens'
+     
+  agti.rdstation.application.event_bash:
+    class: 'AGTI\RdStation\Application\Service\EventBash'
+    arguments:
+      - '@agti.rdstation.infrastructure.utils.get_valid_token'
+      - '@doctrine.orm.entity_manager'
+      - '@agti.rdstation.infrastructure.api.event_batch'

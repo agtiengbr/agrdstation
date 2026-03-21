@@ -1,0 +1,13 @@
+{
+    "name": "agti/agrdstation",
+    "autoload": {
+        "psr-4": {
+            "AGTI\\RdStation\\": "src/"
+        }
+    },
+    "type": "prestashop-module",
+    "config": {
+        "preferred-install": "dist",
+        "prepend-autoloader": false
+    }
+}
