@@ -22,7 +22,7 @@ class BaseAgRdStation extends AgModule{
     public function __construct()
     {
         $this->name                   = 'agrdstation';
-        $this->version                = '1.0.7';
+        $this->version                = '1.0.8';
         $this->bootstrap              = true;
         $this->author                 = 'AGTI';
         $this->need_instance          = 1;
